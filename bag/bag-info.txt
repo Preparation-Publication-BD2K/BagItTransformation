@@ -1,0 +1,4 @@
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+Bagging-Date: 2016-03-07
+Contact-Name: John Kunze
+Payload-Oxum: 2803.6

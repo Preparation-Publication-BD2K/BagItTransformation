@@ -1,0 +1,6 @@
+ecdb3ff69abeae09714eccac14722ddf  data/info.txt
+8a4c068465a0b96e5d2b57dbd23a97f2  data/p1.csv
+8a4c068465a0b96e5d2b57dbd23a97f2  data/p2.csv
+8a4c068465a0b96e5d2b57dbd23a97f2  data/p3.csv
+8a4c068465a0b96e5d2b57dbd23a97f2  data/p4.csv
+8a4c068465a0b96e5d2b57dbd23a97f2  data/p5.csv
