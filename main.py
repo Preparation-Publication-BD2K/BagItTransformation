@@ -2,11 +2,13 @@
 import zipfile
 import sys
 from extract import unzip
-from transformation import transform
+from transformation2 import transform2
 import os
 import bagit
+import json
+from pprint import pprint
 ####extract as cmd argument####
-bag = 'bag.zip'
+bag = 'bag2.zip'
 src =  os.getcwd()+'/'+bag #download directory
 dest = os.getcwd()+'/'+bag.split(".")[0]
 
@@ -19,25 +21,19 @@ zip_ref.close()
 
 bag = bagit.Bag(dest)
 
-if bag.is_valid():
+if bag.is_valid(): #valid
 	print "yay :)"
-	typeFile = dest+'/data/info.txt'
-	with open(typeFile) as fn:
-		flines = fn.readlines()
-		count = 0
-		for line in flines:
-			if count == 0:
-				argLs = line.rstrip().split(",")
-				gName = argLs[0].split(":")[0]
-				gid = argLs[0].split(":")[1]
-				colName = argLs[1].split(":")[0]
-				colid = argLs[1].split(":")[1]
-			elif count == 1:
-				files = line.rstrip().split(",")
-			count = count+1
+    # read metadata:list of files
+	typeFile = dest+'/data/meta.json'
+	with open(typeFile) as data_file:
+		data = json.load(data_file)
 
+	baginfo =  data['baginfo'][0]
+	path = baginfo['path']
+	files =  baginfo['files']
 
-	transform(gid,gName,colid,dest,files)
+	print files
+	transform2("gene_id","transcript_id","FPKM",dest+"/data/",files)
 
 
 else:

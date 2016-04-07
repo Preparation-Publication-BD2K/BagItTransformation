@@ -1,0 +1,82 @@
+{
+"@context": ["Any ontologies we will use?"],
+"baginfo": [
+			{
+				"path": "path to file",
+				"files": [
+							{
+								"fileid":"p1.gtf",
+								"sampleName": "p1"
+							},
+				
+							{
+								"fileid":"p2.gtf",
+								"sampleName": "p2"
+							
+							},
+				
+							{
+								"fileid":"p3.gtf",
+								"sampleName": "p3"
+							
+							}
+						]
+			
+			}
+		],
+"structure" : [
+       {
+				"name" : "seqname",
+                 "column_id": 0
+       },
+       {
+				"name" : "source",
+              "column_id": 1
+		},
+		{
+				"name" : "feature",
+              "column_id": 2,
+              "value": {
+              				"k1":"transcript",
+              				 "k2": "exon"
+              			}
+		},
+		{
+				"name" : "start",
+              "column_id": 3
+		},
+		{
+				"name" : "end",
+              "column_id": 4
+		},
+		{
+				"name" : "score",
+              "column_id": 5
+		},
+		{
+				"name" : "strand",
+              "column_id": 6
+		},
+		{
+				"name" : "frame",
+              "column_id": 7
+		},
+		{
+				"name" : "attribute",
+              "column_id": 8,
+               "value": {
+              				"a1":"gene_id",
+              				 "a2": "transcript_id",
+              				 "a3": "exon_number",
+              				 "a4": "FPKM",
+              				 "a5": "frac",
+              				 "a6": "conf_lo",
+              				 "a6": "conf_hi",
+              				 "a6": "cov"
+              			}
+		}
+       ]
+}
+
+
+
