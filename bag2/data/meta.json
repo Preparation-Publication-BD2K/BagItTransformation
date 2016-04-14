@@ -1,81 +1,111 @@
 {
-"@context": ["Any ontologies we will use?"],
-"baginfo": [
+"aggregates": [ 
+        {
+         "uri": "../data/p1.fasta",
+        "mediatype" : "application/json",
+        "conformsTo":"http://edamontology.org/format_1929"
+        }
+], 
+
+
+"files":[
 			{
-				"path": "path to file",
-				"files": [
-							{
-								"fileid":"p1.gtf",
-								"sampleName": "p1"
-							},
-				
-							{
-								"fileid":"p2.gtf",
-								"sampleName": "p2"
-							
-							},
-				
-							{
-								"fileid":"p3.gtf",
-								"sampleName": "p3"
-							
-							}
-						]
-			
+				"annotations" :  [
+							        {
+							         "uri": "../data/p1.gtf",
+							        "sample": "s1"
+							        },
+							        {
+							         "uri": "../data/p2.gtf",
+							        "sample" : "s2"
+							        },
+							        {
+							         "uri": "../data/p3.gtf",
+							        "sample" : "s3"
+							        }
+							],
+
+				"structure" : [
+						       {
+										"name" : "seqname",
+						                 "column": 0
+						       },
+						       {
+										"name" : "source",
+						              "column": 1
+								},
+								{
+										"name" : "feature",
+						              "column": 2,
+						              "values": [
+							              			{
+							              				"value":"transcript"							              				 
+							              			},
+							              			{
+						              					"value":"exon"						              				 
+						              				}
+						              			]
+								},
+								{
+										"name" : "start",
+						              "column": 3
+								},
+								{
+										"name" : "end",
+						              "column": 4
+								},
+								{
+										"name" : "score",
+						              "column": 5
+								},
+								{
+										"name" : "strand",
+						              "column": 6
+								},
+								{
+										"name" : "frame",
+						              "column": 7
+								},
+								{
+										"name" : "attribute",
+						              "column": 8,
+						               "values": [
+						               				{
+						              				"value":"gene_id"
+						              				 
+							              			},
+							              			{
+							              				"value": "transcript_id"
+							              				 
+							              			},
+							              			{
+							              				"value": "exon_number"
+							              			},
+							              			{
+							              				"value": "FPKM"
+							              			},
+							              			{
+							              				"value": "frac"
+							              			},
+							              			{
+							              				"value": "conf_lo"
+							              			},
+							              			{
+							              				 "value": "conf_hi"
+							              			},
+							              			{
+							              				"value": "cov"
+							              			}
+
+
+						               			]
+								}
+						       ]
 			}
-		],
-"structure" : [
-       {
-				"name" : "seqname",
-                 "column_id": 0
-       },
-       {
-				"name" : "source",
-              "column_id": 1
-		},
-		{
-				"name" : "feature",
-              "column_id": 2,
-              "value": {
-              				"k1":"transcript",
-              				 "k2": "exon"
-              			}
-		},
-		{
-				"name" : "start",
-              "column_id": 3
-		},
-		{
-				"name" : "end",
-              "column_id": 4
-		},
-		{
-				"name" : "score",
-              "column_id": 5
-		},
-		{
-				"name" : "strand",
-              "column_id": 6
-		},
-		{
-				"name" : "frame",
-              "column_id": 7
-		},
-		{
-				"name" : "attribute",
-              "column_id": 8,
-               "value": {
-              				"a1":"gene_id",
-              				 "a2": "transcript_id",
-              				 "a3": "exon_number",
-              				 "a4": "FPKM",
-              				 "a5": "frac",
-              				 "a6": "conf_lo",
-              				 "a6": "conf_hi",
-              				 "a6": "cov"
-              			}
-		}
-       ]
+
+			
+		]
+
 }
 
 

@@ -2,7 +2,7 @@
 import zipfile
 import sys
 from extract import unzip
-from transformation2 import transform2
+from transformation3 import transform3
 import os
 import bagit
 import json
@@ -24,16 +24,32 @@ bag = bagit.Bag(dest)
 if bag.is_valid(): #valid
 	print "yay :)"
     # read metadata:list of files
-	typeFile = dest+'/data/meta.json'
+	manifest = dest+'/manifest-md5.txt'
+
+	with open(manifest) as fn:
+		flines = fn.readlines()
+		files = []
+		for line in flines:
+			print line
+			if "meta" in line:
+				typeFile = dest+"/data"+line.split("data")[1].rstrip().lstrip()
+				print typeFile
+			else:
+				files.append(line.split("data")[1].rstrip().lstrip())
+
 	with open(typeFile) as data_file:
 		data = json.load(data_file)
 
-	baginfo =  data['baginfo'][0]
-	path = baginfo['path']
-	files =  baginfo['files']
-
-	print files
-	transform2("gene_id","transcript_id","FPKM",dest+"/data/",files)
+	#baginfo =  data['baginfo'][0]
+	#path = baginfo['path']
+	files =  data['files']
+	annotations = []
+	structures = []
+	for a in files: # there can be a list of annotations where each annotation itself is a list of files
+		annotations.append(a['annotations'])
+		structures.append(a['structure'])
+	
+	transform3("gene_id","FPKM",dest,annotations,structures)
 
 
 else:

@@ -1,4 +1,4 @@
 Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
-Bagging-Date: 2016-04-07
+Bagging-Date: 2016-04-14
 Contact-Name: Sajjadur Rahman
-Payload-Oxum: 104599.4
+Payload-Oxum: 105734.4
