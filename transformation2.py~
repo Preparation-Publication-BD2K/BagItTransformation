@@ -1,0 +1,45 @@
+#!/usr/bin/python
+import os
+
+def transform2(col1,col2,dest,files):
+
+	dictList = []
+	header =  col1
+	for f in files:
+		header = header+","+f
+		typeFile = dest+f+".gtf"
+		with open(typeFile) as fn:
+			flines = fn.readlines()
+			print len(flines)
+
+			count = 0
+			fpkmDict = {}
+			for lines in flines:
+
+				temp = lines.rstrip().split("	")
+				fpkmDict[] = temp[]
+				count = count+1
+
+			dictList.append(fpkmDict)
+
+	keyList = set()
+	for d in dictList:
+		for key in d:
+			keyList.add(key)
+
+	f = open('result.csv','w')
+
+	##header
+	f.write(header+'\n') 
+
+	for key in keyList:
+		line = key
+		for d in dictList:
+			if key in d:
+				line = line+","+str(d[key])
+		line = line+'\n'
+		f.write(line)
+	
+	f.close()
+
+transform2("gene_id","FPKM",os.getcwd()+"/",["p1","p2","p3"])

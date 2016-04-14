@@ -1,0 +1,24 @@
+{
+"@context": ["Any ontologies we will use?"],
+"input" : [
+				{
+					"parameter":"feature",
+					"operation": "validate",
+					"value":"transcript"
+					
+				},
+
+				{
+					"parameter":"attribute",
+					"operation":"retrieve",
+					"value":{
+								"key":"gene_id",
+								
+									"value":"FPKM"
+								
+							}
+
+							
+				}
+			]
+}

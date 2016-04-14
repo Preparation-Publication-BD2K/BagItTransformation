@@ -1,0 +1,112 @@
+{
+"aggregates": [ 
+        {
+         "uri": "../data/p1.fasta",
+        "mediatype" : "application/json",
+        "conformsTo":"http://edamontology.org/format_1929"
+        }
+], 
+
+
+"files":[
+			{
+				"annotations" :  [
+							        {
+							         "uri": "../data/p1.gtf",
+							        "sample": "s1"
+							        },
+							        {
+							         "uri": "../data/p2.gtf",
+							        "sample" : "s2"
+							        },
+							        {
+							         "uri": "../data/p3.gtf",
+							        "sample" : "s3"
+							        }
+							],
+
+				"structure" : [
+						       {
+										"name" : "seqname",
+						                 "column": 0
+						       },
+						       {
+										"name" : "source",
+						              "column": 1
+								},
+								{
+										"name" : "feature",
+						              "column": 2,
+						              "values": [
+							              			{
+							              				"value":"transcript"							              				 
+							              			},
+							              			{
+						              					"value":"exon"						              				 
+						              				}
+						              			]
+								},
+								{
+										"name" : "start",
+						              "column": 3
+								},
+								{
+										"name" : "end",
+						              "column": 4
+								},
+								{
+										"name" : "score",
+						              "column": 5
+								},
+								{
+										"name" : "strand",
+						              "column": 6
+								},
+								{
+										"name" : "frame",
+						              "column": 7
+								},
+								{
+										"name" : "attribute",
+						              "column": 8,
+						               "values": [
+						               				{
+						              				"value":"gene_id"
+						              				 
+							              			},
+							              			{
+							              				"value": "transcript_id"
+							              				 
+							              			},
+							              			{
+							              				"value": "exon_number"
+							              			},
+							              			{
+							              				"value": "FPKM"
+							              			},
+							              			{
+							              				"value": "frac"
+							              			},
+							              			{
+							              				"value": "conf_lo"
+							              			},
+							              			{
+							              				 "value": "conf_hi"
+							              			},
+							              			{
+							              				"value": "cov"
+							              			}
+
+
+						               			]
+								}
+						       ]
+			}
+
+			
+		]
+
+}
+
+
+

@@ -2,11 +2,13 @@
 import zipfile
 import sys
 from extract import unzip
-from transformation import transform
+from transformation3 import transform3
 import os
 import bagit
+import json
+from pprint import pprint
 ####extract as cmd argument####
-bag = 'bag.zip'
+bag = 'bag2.zip'
 src =  os.getcwd()+'/'+bag #download directory
 dest = os.getcwd()+'/'+bag.split(".")[0]
 
@@ -19,25 +21,35 @@ zip_ref.close()
 
 bag = bagit.Bag(dest)
 
-if bag.is_valid():
+if bag.is_valid(): #valid
 	print "yay :)"
-	typeFile = dest+'/data/info.txt'
-	with open(typeFile) as fn:
+    # read metadata:list of files
+	manifest = dest+'/manifest-md5.txt'
+
+	with open(manifest) as fn:
 		flines = fn.readlines()
-		count = 0
+		files = []
 		for line in flines:
-			if count == 0:
-				argLs = line.rstrip().split(",")
-				gName = argLs[0].split(":")[0]
-				gid = argLs[0].split(":")[1]
-				colName = argLs[1].split(":")[0]
-				colid = argLs[1].split(":")[1]
-			elif count == 1:
-				files = line.rstrip().split(",")
-			count = count+1
+			print line
+			if "meta" in line:
+				typeFile = dest+"/data"+line.split("data")[1].rstrip().lstrip()
+				print typeFile
+			else:
+				files.append(line.split("data")[1].rstrip().lstrip())
 
+	with open(typeFile) as data_file:
+		data = json.load(data_file)
 
-	transform(gid,gName,colid,dest,files)
+	#baginfo =  data['baginfo'][0]
+	#path = baginfo['path']
+	files =  data['files']
+	annotations = []
+	structures = []
+	for a in files: # there can be a list of annotations where each annotation itself is a list of files
+		annotations.append(a['annotations'])
+		structures.append(a['structure'])
+	
+	transform3("gene_id","FPKM",dest,annotations,structures)
 
 
 else:
