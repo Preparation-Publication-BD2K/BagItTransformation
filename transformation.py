@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import os
 
-def transform3(col1,col2,dest,annotations,structures):
+def transform(col1,col2,dest,annotations,structures):
 
 	dictList = []
 	

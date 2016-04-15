@@ -1,14 +1,12 @@
 #!/usr/bin/python
 import zipfile
-import sys
-from extract import unzip
-from transformation3 import transform3
+from transformation import transform
 import os
 import bagit
 import json
-from pprint import pprint
+
 ####extract as cmd argument####
-bag = 'bag2.zip'
+bag = 'mydata.zip'
 src =  os.getcwd()+'/'+bag #download directory
 dest = os.getcwd()+'/'+bag.split(".")[0]
 
@@ -28,14 +26,12 @@ if bag.is_valid(): #valid
 
 	with open(manifest) as fn:
 		flines = fn.readlines()
-		files = []
 		for line in flines:
 			print line
-			if "meta" in line:
-				typeFile = dest+"/data"+line.split("data")[1].rstrip().lstrip()
+			if "meta.json" in line:
+				typeFile = dest+"/data/"+line.split(" data/")[1].rstrip().lstrip()
 				print typeFile
-			else:
-				files.append(line.split("data")[1].rstrip().lstrip())
+
 
 	with open(typeFile) as data_file:
 		data = json.load(data_file)
@@ -48,8 +44,8 @@ if bag.is_valid(): #valid
 	for a in files: # there can be a list of annotations where each annotation itself is a list of files
 		annotations.append(a['annotations'])
 		structures.append(a['structure'])
-	
-	transform3("gene_id","FPKM",dest,annotations,structures)
+
+	transform("gene_id","FPKM",dest,annotations,structures)
 
 
 else:
