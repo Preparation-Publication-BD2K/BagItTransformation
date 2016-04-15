@@ -1,26 +1,49 @@
 #!/usr/bin/python
 import os
 
-def transform(gid,gName,colid,dest,files):
+def transform3(col1,col2,dest,annotations,structures):
 
 	dictList = []
-	header =  gName
-	for f in files:
-		header = header+","+f
-		typeFile = dest+"/data/"+f+".csv"
-		with open(typeFile) as fn:
-			flines = fn.readlines()
+	
+	for annot in annotations:
+		header =  col1
+		for f in annot:
+			header = header+","+str(f['sample'])  #read sample names
+			typeFile = dest+str(f['uri']).split("..")[1]  #read file names
+			with open(typeFile) as fn:
+				flines = fn.readlines()
+				
+				count = 0
+				fpkmDict = {}
+				for lines in flines:
 
-			count = 0
-			fpkmDict = {}
-			for lines in flines:
+					temp = lines.rstrip().split("	")
+					print len(temp)
+					gid = ""
+					tif = ""
+					fpkm = ""
+					# if "feature" column (col 3) is "transcript", only read that line
 
-				if count > 0:
-					temp = lines.rstrip().split(",")
-					fpkmDict[temp[int(gid)-1]] = temp[int(colid)-1]
-				count = count+1
+					if "transcript" in temp[2]:
+						for elem in range(len(temp)): # parse gene id
+							temp2 = temp[elem].split(";")
+							for elem2 in range(len(temp2)):
+								if col1 in temp2[elem2]:
+									gid = temp2[elem2].rstrip().lstrip().split(" ")[1]
+								#print gid
 
-			dictList.append(fpkmDict)
+						for elem in range(len(temp)): # parse fpkm
+							temp2 = temp[elem].split(";")
+							for elem2 in range(len(temp2)):
+								#print temp2[elem2]
+								if col2 in temp2[elem2]:
+									fpkm = temp2[elem2].rstrip().lstrip().split(" ")[1]
+						
+						if len(gid)>0: #if gene id non-empty
+							fpkmDict[gid] = fpkm
+					count = count+1
+
+				dictList.append(fpkmDict)
 
 	keyList = set()
 	for d in dictList:
