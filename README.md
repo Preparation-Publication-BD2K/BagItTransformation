@@ -34,15 +34,15 @@ https://hub.docker.com/r/cblatti3/bagit_extract/
 # running extraction, validation, and tranformation
 ```
 # tiny test
-python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
+python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
 
 # realistic test
-python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
+python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
 ```
 
 
 
-# arguments for main.py
+# arguments for bagit_extract.py
 link to bag,
 location/name for output,
 feature list,
