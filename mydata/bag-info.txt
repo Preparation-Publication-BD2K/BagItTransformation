@@ -1,0 +1,4 @@
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+Bagging-Date: 2016-04-15
+Contact-Name: Charles Blatti
+Payload-Oxum: 104368.4

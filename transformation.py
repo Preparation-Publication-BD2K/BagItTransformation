@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import os
 
-def transform(col1,col2,dest,annotations,structures):
+def transform(col1,col2,src,dest,annotations,structures):
 
 	dictList = []
 	
@@ -9,8 +9,9 @@ def transform(col1,col2,dest,annotations,structures):
 		header =  col1
 		for f in annot:
 			header = header+","+str(f['sample'])  #read sample names
-			typeFile = dest+str(f['uri']).split("..")[1]  #read file names
+			typeFile = src+str(f['uri']).split("..")[1]  #read file names
 			with open(typeFile) as fn:
+				
 				flines = fn.readlines()
 				
 				count = 0
@@ -18,7 +19,10 @@ def transform(col1,col2,dest,annotations,structures):
 				for lines in flines:
 
 					temp = lines.rstrip().split("	")
-					print len(temp)
+					#print len(temp)
+					if len(temp) < 9:
+						print typeFile
+						print lines
 					gid = ""
 					tif = ""
 					fpkm = ""
@@ -50,7 +54,7 @@ def transform(col1,col2,dest,annotations,structures):
 		for key in d:
 			keyList.add(key)
 
-	f = open('result.csv','w')
+	f = open(dest+'result.csv','w')
 
 	##header
 	f.write(header+'\n') 

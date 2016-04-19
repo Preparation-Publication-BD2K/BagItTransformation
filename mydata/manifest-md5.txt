@@ -1,0 +1,4 @@
+a1edbad5ebc881ee31d8e1b05f59439d  data/files/p1.gtf
+7b9ad7feb6361da690d456d59d5da6d6  data/files/p2.gtf
+048657efba522ec6114a7179a4b52b0d  data/files/p3.gtf
+a748ffc3b0a1f76d568db60247d6ee65  data/metadata/file-meta.json
