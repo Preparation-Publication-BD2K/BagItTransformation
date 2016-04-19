@@ -32,8 +32,9 @@ http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download
 https://hub.docker.com/r/cblatti3/bagit_extract/
 
 # running extraction, validation, and tranformation
+# http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download
 ```
-python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
+python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
 ```
 
 # arguments for main.py

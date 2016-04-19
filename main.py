@@ -38,13 +38,16 @@ def main():
 	req = requests.get(url, stream=True)
 
 	###bag extraction
+	bag = 'mydata.zip'
+	dest = os.getcwd()+'/'+bag.split(".")[0]
+	if not os.path.exists(dest):
+		os.makedirs(dest)
 	zip_ref = zipfile.ZipFile(StringIO.StringIO(req.content))
-	zip_ref.extractall(os.getcwd())
+	zip_ref.extractall(dest)
 	zip_ref.close()
 
 	### check the validity md5.txt
-	bag = 'mydata.zip'
-	dest = os.getcwd()+'/'+bag.split(".")[0]
+	
 	bag = bagit.Bag(dest)
 
 	if bag.is_valid(): #valid
