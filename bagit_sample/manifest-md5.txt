@@ -1,4 +1,0 @@
-3d27e8557a9b6b6aca40523a1d07167c  data/meta.json
-a1edbad5ebc881ee31d8e1b05f59439d  data/p1.gtf
-7b9ad7feb6361da690d456d59d5da6d6  data/p2.gtf
-048657efba522ec6114a7179a4b52b0d  data/p3.gtf
