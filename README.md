@@ -33,8 +33,14 @@ https://hub.docker.com/r/cblatti3/bagit_extract/
 
 # running extraction, validation, and tranformation
 ```
+# tiny test
+python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
+
+# realistic test
 python main.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
 ```
+
+
 
 # arguments for main.py
 link to bag,
@@ -43,3 +49,8 @@ feature list,
 gene desc name,
 score desc name
 
+# small fixes for KnowEnG
+sammples by genes matrix (transpose)
+remove quote characters (")
+use tab separatation
+rename result.csv to "bagit_data.df"

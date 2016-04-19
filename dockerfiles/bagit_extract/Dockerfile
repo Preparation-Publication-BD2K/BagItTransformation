@@ -9,9 +9,13 @@ FROM python:2.7-slim
 MAINTAINER Charles Blatti
 
 # Update the repository sources list
-RUN apt-get update && apt-get install -y rsync wget python-pip
+RUN apt-get update && apt-get install -y \
+    rsync \
+    wget \
+    python-pip
 
-RUN pip install bagit
+RUN pip install bagit \
+    requests
 
 # Set default contain command on run
 CMD /bin/bash
