@@ -6,6 +6,7 @@ import bagit
 import json
 import requests,StringIO
 from argparse import ArgumentParser
+#import time
 #import config_utilities as cf
 
 def main_parse_args():
@@ -28,6 +29,8 @@ def main_parse_args():
 
 
 def main():
+
+	#start = time.clock()
 	####extract as cmd argument####
 	args = main_parse_args()
 
@@ -76,17 +79,35 @@ def main():
 			annotations.append(a['annotations'])
 			structures.append(a['structure'])
 
-		#transform("gene_id","FPKM",dest,annotations,structures)
+		#find the column containing gene and score descript
+		geneDescCol = []
+		scoreDescCol = []
+
+		for struct in structures:
+			for key in struct:
+				if 'values' in key:
+					for value in key['values']:
+						if args.gene_desc in value['value']:
+							geneDescCol.append(key['column'])
+						if args.score_desc in value['value']:
+							scoreDescCol.append(key['column'])
+
+
 		#output diretory
 
 		out = os.getcwd()+"/"+args.output_dir+"/"
 		if not os.path.exists(out):
 			os.makedirs(out)
 		
-		transform(args.gene_desc,args.score_desc,dest,out,annotations,structures)
+		transform(args.gene_desc,geneDescCol,args.score_desc,scoreDescCol,dest,out,annotations,structures)
+
+		#print "total"
+		#print time.clock()-start
 
 	else:
 	    print "boo :("
 
 if __name__ == "__main__":
+
     main()
+    
