@@ -40,9 +40,6 @@ python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG
 python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
 ```
 
-# generate new bag
-python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQPW6aTd7piTC/download'
-
 ### arguments for bagit_extract.py
 ```
     --bag_link      |str    |-bl    |download url of the bag
@@ -52,8 +49,19 @@ python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQ
     --score_desc    |str    |-sd    |score descript name
 ```
 
+# generate new bag
+'''
+python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQPW6aTd7piTC/download'
+'''
+
+### arguments for generateNewBag.py
+'''
+    --analysis_link |str    |-al    |download url of the analysis
+'''
+
 ### assumptions
 - url points to zipped bag
 - multiple gtf files in data/files with metadata in data/metadata
 - outputs in output_dir file "bagit_data.df"
 - samples by genes tab seperated matrix with row and column names
+- generateNewBag will work on the same working directory, so the downloaded bag from BDDS is already extracted
