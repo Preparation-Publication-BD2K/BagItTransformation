@@ -40,6 +40,9 @@ python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG
 python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
 ```
 
+# generate new bag
+python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQPW6aTd7piTC/download'
+
 ### arguments for bagit_extract.py
 ```
     --bag_link      |str    |-bl    |download url of the bag
