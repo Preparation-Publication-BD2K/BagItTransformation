@@ -50,14 +50,14 @@ python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrc
 ```
 
 # generate new bag
-'''
+```
 python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQPW6aTd7piTC/download'
-'''
+```
 
 ### arguments for generateNewBag.py
-'''
+```
     --analysis_link |str    |-al    |download url of the analysis
-'''
+```
 
 ### assumptions
 - url points to zipped bag
