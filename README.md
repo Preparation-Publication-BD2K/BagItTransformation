@@ -51,12 +51,13 @@ python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrc
 
 # generate new bag
 ```
-python generateNewBag.py -al 'http://knowcloud.cse.illinois.edu/index.php/s/EYJQPW6aTd7piTC/download'
+python generateNewBag.py -ad outs -md chron_jobs
 ```
 
 ### arguments for generateNewBag.py
 ```
-    --analysis_link |str    |-al    |download url of the analysis
+    --analysis_dir  |str    |-ad    |directory of the analysis
+    --metadata_dir  |str    |-md    |directory of the analysis metadata
 ```
 
 ### assumptions
