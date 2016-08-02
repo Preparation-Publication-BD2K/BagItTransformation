@@ -37,16 +37,17 @@ https://hub.docker.com/r/cblatti3/bagit_extract/
 python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
 
 # realistic test
-python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -od result -gd gene_id -sd FPKM
+python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -o result -gd gene_id -sd FPKM
 ```
 
 ### arguments for bagit_extract.py
 ```
-    --bag_link      |str    |-bl    |download url of the bag
-    --output_dir    |str    |-od    |relative directory of the transformed matrix
-    --feature_list  |array  |-fl    |list of features in the gtf file
-    --gene_desc     |str    |-gd    |gene descript name
-    --score_desc    |str    |-sd    |score descript name
+    --bag_link              |str    |-bl    |download url of the bag
+    --output_file           |str    |-o     |the output file to write the transformed matrix
+    --feature_list          |array  |-fl    |list of features in the gtf file
+    --gene_desc             |str    |-gd    |gene descript name
+    --bagit_data_directory  |str    |-bd    |the directory in which to put the extracted bagit data (default "mydata")
+    --score_desc            |str    |-sd    |score descript name
 ```
 
 # generate new bag
