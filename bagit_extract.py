@@ -1,113 +1,352 @@
-#!/usr/bin/python
-import zipfile
-from gtf2df_transformation import transform
-import os
-import bagit
+#!/usr/bin/env python3
+
+
+"""
+This module extracts data from a bag.
+
+**Arguments**
+
+.. csv-table::
+    :header: flag,name,type,status,reqs.,description
+    :widths: 5,20,5,20,10,40
+    :delim: |
+
+    -bl|--bag_link|str|required||the download url of the bag
+    -bd|--bagit_data_directory|str|optional, default: 'mydata'| \
+        the directory in which to put the extracted bagit data and files
+    -o|--output_file|str|required||the output file to write the transformed matrix
+    -fl|--feature_list||optional, default: None||the list of features in the gtf file
+    -gd|--gene_desc|str|required||the gene descriptor name
+    -sd|--score_desc|str|required||the score descriptor name
+"""
+
+
+import argparse
 import json
-import requests,StringIO
-from argparse import ArgumentParser
-#import time
-#import config_utilities as cf
+import os
+import math
+import zipfile
 
-def main_parse_args():
-    """Processes command line arguments.
-    Expects a number of pipeline specific and global optional arguments.
-    If argument is missing, supplies default value.
-    Returns: args as populated namespace
+# To work with either python2 or python3
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
+
+import requests
+
+import bagit
+
+
+# Initialization/Constants
+DEFAULT_BAGIT_DATA_DIRECTORY = "mydata"
+DEFAULT_MANIFEST_FILE = "manifest-md5.txt"
+DEFAULT_META_FILE = "meta.json"
+
+
+def parse_args():
     """
-    parser = ArgumentParser()
-    parser.add_argument('-bl', '--bag_link',help=('download url of the bag'), required=True)
-    parser.add_argument('-od', '--output_dir',help=('relative directory of the transformed matrix'), required=True)
-    parser.add_argument('-fl', '--feature_list',help=('list of features in the gtf file'))
-    parser.add_argument('-gd', '--gene_desc',help=('gene descript name'), required=True)
-    parser.add_argument('-sd', '--score_desc',help=('score descript name'), required=True)
+    Processes the command line arguments.
 
-    #parser = cf.add_config_args(parser)
+    Returns:
+        argparse.Namespace: args as populated namespace
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-bl', '--bag_link', required=True,
+                        help='the download url of the bag')
+    parser.add_argument('-bd', '--bagit_data_directory',
+                        default=DEFAULT_BAGIT_DATA_DIRECTORY,
+                        help='the directory in which to put the '
+                             'extracted bagit data and files')
+    parser.add_argument('-o', '--output_file', required=True,
+                        help='the output file to write the transformed matrix')
+    parser.add_argument('-fl', '--feature_list',
+                        help='the list of features in the gtf file')
+    parser.add_argument('-gd', '--gene_desc', required=True,
+                        help='the gene descriptor name')
+    parser.add_argument('-sd', '--score_desc', required=True,
+                        help='the score descriptor name')
+    parser.add_argument('-v', '--verbose', action='store_true')
+
     args = parser.parse_args()
+
     return args
 
 
+def extract_bag(bag_link, bagit_data_directory):
+    """
+    Downloads and extracts the bag.
+
+    Parameters:
+        bag_link (str): the bag's url
+        bagit_data_directory (str): the directory to store the bag's contents
+    """
+    # Download the bag
+    url = bag_link
+
+    req = requests.get(url, stream=True)
+    zip_ref = zipfile.ZipFile(StringIO(req.content))
+
+    if not os.path.exists(bagit_data_directory):
+        os.makedirs(bagit_data_directory)
+
+    zip_ref.extractall(bagit_data_directory)
+    zip_ref.close()
+
+
+def get_meta_file(bagit_data_directory):
+    """
+    Gets the meta file from the bagit data directory.
+
+    Parameters:
+        bagit_data_directory (str): the directory containing the bag's contents
+
+    Returns:
+        str: the meta file (possibly None)
+    """
+    manifest = os.path.join(bagit_data_directory, DEFAULT_MANIFEST_FILE)
+
+    meta_file = None
+
+    with open(manifest) as f:
+        for line in f:
+            if line.rstrip().endswith(DEFAULT_META_FILE):
+                meta_file = os.path.join(bagit_data_directory, line.split()[1])
+                break
+
+    return meta_file
+
+
+def parse_meta_file(meta_file):
+    """
+    Parses the meta file and builds the annotations and structure data.
+
+    Parameters:
+        meta_file (str): the meta file (the full path)
+
+    Returns:
+        a 2-tuple containing
+
+        - **annotations** (*list*): the annotations found
+        - **structure** (*list*): the structure found
+    """
+    with open(meta_file) as data_file:
+        data = json.load(data_file)
+
+    files = data['files']
+
+    annotations = []
+    structure = []
+
+    # There can be a list of annotations, where each annotation
+    # itself is a list of files
+    for item in files:
+        annotations.append(item['annotations'])
+        structure.append(item['structure'])
+
+    return annotations, structure
+
+
+def parse_structure(structure, gene_desc, score_desc):
+    """
+    Parses the structure to find the columns containing the gene and
+    score descriptors.
+
+    Parameters:
+        structure (list): a list of lists of dicts
+
+    Returns:
+        a 2-tuple containing
+
+        - **gene_desc_col** (*list*): the columns contains the gene descriptor
+        - **score_desc_col** (*list*): the columns contains the score descriptor
+    """
+    gene_desc_col = []
+    score_desc_col = []
+
+    # structure is a list of lists of dicts
+    # item is a list of dicts
+    for item in structure:
+        # dct is a dict
+        for dct in item:
+            if "values" in dct:
+                for value in dct['values']:
+                    if value['value'] == gene_desc:
+                        gene_desc_col.append(dct['column'])
+                    if value['value'] == score_desc:
+                        score_desc_col.append(dct['column'])
+
+    return gene_desc_col, score_desc_col
+
+
+def gather_data(gene_desc, gene_desc_col, score_desc, score_desc_col,
+                bagit_data_directory, annotations):
+    """
+    Gathers data from the files in the bag.
+
+    Gathers data from the files in the bag, collecting the scores for
+    the columns matching the gene descriptor and the score descriptor.
+
+    Parameters:
+        gene_desc (str): the gene descriptor
+        gene_desc_col (list): the gene descriptor
+        score_desc (str): the gene descriptor
+        score_desc_col (list): the gene descriptor
+        bagit_data_directory (str): the bagit data directory
+        annotations (list): the annotations from the meta file
+
+    Returns:
+        a 4-tuple containing
+
+        - **dict_list** (*dict*): the score per gene per file
+        - **count_per_gene** (*dict*): the count per gene
+        - **score_sum_per_gene** (*dict*): the score sum per gene
+        - **score_sq_sum_per_gene** (*dict*): the score sq sum per gene
+    """
+    dict_list = {}
+    count_per_gene = {}
+    score_sum_per_gene = {}
+    score_sq_sum_per_gene = {}
+
+    for item, gd_col, sd_col in zip(annotations, gene_desc_col, score_desc_col):
+        for dct in item:
+            filename = bagit_data_directory + str(dct['uri']).split("..")[1]
+
+            with open(filename) as f:
+                fpkm_dict = {}
+                for line in f:
+                    items = line.rstrip().split("\t")
+                    if len(items) < 9:
+                        continue
+
+                    gid = None
+                    fpkm = None
+
+                    # Only look at lines where "feature" column
+                    # (column 2) is "transcript"
+                    if items[2] == "transcript":
+                        attrs = items[gd_col].split("; ")
+                        for attr in attrs:
+                            if attr.startswith(gene_desc):
+                                gid = attr.split()[1]
+
+                        attrs = items[sd_col].split("; ")
+                        for attr in attrs:
+                            if attr.startswith(score_desc):
+                                fpkm = attr.split()[1].replace("\"", "")
+
+                        if gid is not None and fpkm is not None:
+                            fpkm_dict[gid] = float(fpkm)
+                            if gid not in count_per_gene:
+                                count_per_gene[gid] = 0
+                                score_sum_per_gene[gid] = 0.0
+                                score_sq_sum_per_gene[gid] = 0.0
+                            count_per_gene[gid] += 1
+                            score_sum_per_gene[gid] += float(fpkm)
+                            score_sq_sum_per_gene[gid] += float(fpkm) * float(fpkm)
+
+                dict_list[str(dct['sample'])] = fpkm_dict
+
+    return dict_list, count_per_gene, score_sum_per_gene, score_sq_sum_per_gene
+
+
+def output_data(output_file, dict_list, count_per_gene, score_sum_per_gene, score_sq_sum_per_gene):
+    """
+    Outputs the data.
+
+    Outputs the data, in a spreadsheet/dataframe format, with the
+    samples/files as the rows and the genes as the columns.  The gene
+    names are the column headers and the sample/file names are the row
+    labels.  Each value is normalized.
+
+    Parameters:
+        output_file (str): the output file
+        dict_list (dict): the score per gene per file
+        count_per_gene (dict): the count per gene
+        score_sum_per_gene (dict): the score sum per gene
+        score_sq_sum_per_gene (dict): the score sq sum per gene
+    """
+    # Build the set of all keys that occur in dict_list
+    key_list = set()
+    for filename in sorted(dict_list):
+        for key in dict_list[filename]:
+            key_list.add(key)
+
+    f = open(output_file, 'w')
+
+    # Generate and write the header
+    header = ""
+    for key in sorted(key_list):
+        header += "\t" + key
+    header += "\n"
+    f.write(header.replace("\"", ""))
+
+    # Generate and write each row
+    for filename in sorted(dict_list):
+        f.write(filename)
+
+        for key in sorted(key_list):
+            # Write each value, normalized
+            if key in dict_list[filename]:
+                f.write("\t")
+
+                # Finish calculating the standard deviation
+                mean = score_sum_per_gene[key]/count_per_gene[key]
+                sq_val = (score_sum_per_gene[key] * score_sum_per_gene[key])/count_per_gene[key]
+                if sq_val < score_sq_sum_per_gene[key]:
+                    val = (score_sq_sum_per_gene[key] - sq_val)/(count_per_gene[key] - 1)
+                    stdev = math.sqrt(val)
+                    normalized_value = abs(dict_list[filename][key] - mean)/stdev
+                else:
+                    normalized_value = dict_list[filename][key]
+
+                f.write(str(normalized_value))
+            else:
+                f.write("\t")
+
+        f.write("\n")
+
+    f.close()
+
 
 def main():
+    """
+    This is the main function.
 
-	#start = time.clock()
-	####extract as cmd argument####
-	args = main_parse_args()
+    Raises:
+        RuntimeError: if there was a problem with the structure or
+            contents of the bag
+    """
+    args = parse_args()
 
-    
-	###download bag
-	url = args.bag_link #'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download'
+    extract_bag(args.bag_link, args.bagit_data_directory)
+    bag = bagit.Bag(args.bagit_data_directory)
 
-	req = requests.get(url, stream=True)
+    if not bag.is_valid():
+        raise RuntimeError("invalid bag (%s)" % (args.bag_link))
 
-	###bag extraction
-	bag = 'mydata.zip'
-	dest = os.getcwd()+'/'+bag.split(".")[0]
-	if not os.path.exists(dest):
-		os.makedirs(dest)
-	zip_ref = zipfile.ZipFile(StringIO.StringIO(req.content))
-	zip_ref.extractall(dest)
-	zip_ref.close()
+    meta_file = get_meta_file(args.bagit_data_directory)
+    if meta_file is None:
+        raise RuntimeError("no %s file found in bag" % (DEFAULT_META_FILE))
 
-	### check the validity md5.txt
-	
-	bag = bagit.Bag(dest)
+    annotations, structure = parse_meta_file(meta_file)
 
-	if bag.is_valid(): #valid
-		print "yay :)"
-	    # read metadata:list of files
-		manifest = dest+'/manifest-md5.txt'
+    gene_desc_col, score_desc_col = parse_structure(structure, args.gene_desc, args.score_desc)
+    if not gene_desc_col:
+        raise RuntimeError("no columns match gene descriptor '%s'" % (args.gene_desc))
+    if not score_desc_col:
+        raise RuntimeError("no columns match score descriptor '%s'" % (args.score_desc))
 
-		with open(manifest) as fn:
-			flines = fn.readlines()
-			for line in flines:
-				#print line
-				if "meta.json" in line:
-					typeFile = dest+"/data/"+line.split(" data/")[1].rstrip().lstrip()
-					#print typeFile
+    dict_list, count_per_gene, score_sum_per_gene, score_sq_sum_per_gene = \
+        gather_data(args.gene_desc, gene_desc_col,
+                    args.score_desc, score_desc_col,
+                    args.bagit_data_directory, annotations)
 
+    output_data(args.output_file, dict_list, count_per_gene,
+                score_sum_per_gene, score_sq_sum_per_gene)
 
-		with open(typeFile) as data_file:
-			data = json.load(data_file)
-
-		#baginfo =  data['baginfo'][0]
-		#path = baginfo['path']
-		files =  data['files']
-		annotations = []
-		structures = []
-		for a in files: # there can be a list of annotations where each annotation itself is a list of files
-			annotations.append(a['annotations'])
-			structures.append(a['structure'])
-
-		#find the column containing gene and score descript
-		geneDescCol = []
-		scoreDescCol = []
-
-		for struct in structures:
-			for key in struct:
-				if 'values' in key:
-					for value in key['values']:
-						if args.gene_desc in value['value']:
-							geneDescCol.append(key['column'])
-						if args.score_desc in value['value']:
-							scoreDescCol.append(key['column'])
-
-
-		#output diretory
-
-		out = os.getcwd()+"/"+args.output_dir+"/"
-		if not os.path.exists(out):
-			os.makedirs(out)
-		
-		transform(args.gene_desc,geneDescCol,args.score_desc,scoreDescCol,dest,out,annotations,structures)
-
-		#print "total"
-		#print time.clock()-start
-
-	else:
-	    print "boo :("
 
 if __name__ == "__main__":
-
     main()
-    
+
+
