@@ -11,7 +11,7 @@ This module extracts data from a bag.
     :widths: 5,20,5,20,10,40
     :delim: |
 
-    -bl|--bag_link|str|required||the download url of the bag
+    -b|--bag_file|str|required||the bag file to be extracted
     -bd|--bagit_data_directory|str|optional, default: 'mydata'| \
         the directory in which to put the extracted bagit data and files
     -o|--output_file|str|required||the output file to write the transformed matrix
@@ -26,14 +26,6 @@ import json
 import os
 import math
 import zipfile
-
-# To work with either python2 or python3
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import BytesIO as StringIO
-
-import requests
 
 import bagit
 
@@ -52,8 +44,8 @@ def parse_args():
         argparse.Namespace: args as populated namespace
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-bl', '--bag_link', required=True,
-                        help='the download url of the bag')
+    parser.add_argument('-b', '--bag_file', required=True,
+                        help='the bag file to be extracted')
     parser.add_argument('-bd', '--bagit_data_directory',
                         default=DEFAULT_BAGIT_DATA_DIRECTORY,
                         help='the directory in which to put the '
@@ -73,7 +65,7 @@ def parse_args():
     return args
 
 
-def extract_bag(bag_link, bagit_data_directory):
+def extract_bag(bag_file, bagit_data_directory):
     """
     Downloads and extracts the bag.
 
@@ -81,11 +73,7 @@ def extract_bag(bag_link, bagit_data_directory):
         bag_link (str): the bag's url
         bagit_data_directory (str): the directory to store the bag's contents
     """
-    # Download the bag
-    url = bag_link
-
-    req = requests.get(url, stream=True)
-    zip_ref = zipfile.ZipFile(StringIO(req.content))
+    zip_ref = zipfile.ZipFile(bag_file)
 
     if not os.path.exists(bagit_data_directory):
         os.makedirs(bagit_data_directory)
@@ -319,7 +307,7 @@ def main():
     """
     args = parse_args()
 
-    extract_bag(args.bag_link, args.bagit_data_directory)
+    extract_bag(args.bag_file, args.bagit_data_directory)
     bag = bagit.Bag(args.bagit_data_directory)
 
     if not bag.is_valid():

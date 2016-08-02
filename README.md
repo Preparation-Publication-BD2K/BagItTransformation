@@ -31,22 +31,22 @@ http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download
 ### docker container to run code
 https://hub.docker.com/r/cblatti3/bagit_extract/
 
+### test datasets
+tiny test: http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download
+realistic test: http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download
+
 ### running extraction, validation, and tranformation
 ```
-# tiny test
-python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/iw9DG6x15ZtXiId/download' -od result -gd gene_id -sd FPKM
-
-# realistic test
-python bagit_extract.py -bl 'http://knowcloud.cse.illinois.edu/index.php/s/n5Zrcqq6yyuOrPI/download' -o result -gd gene_id -sd FPKM
+python bagit_extract.py -b mydata.zip -bd mydata -o bagit_data.df -gd gene_id -sd FPKM
 ```
 
 ### arguments for bagit_extract.py
 ```
-    --bag_link              |str    |-bl    |download url of the bag
+    --bag_file              |str    |-b     |the bag file to be extracted
     --output_file           |str    |-o     |the output file to write the transformed matrix
     --feature_list          |array  |-fl    |list of features in the gtf file
     --gene_desc             |str    |-gd    |gene descript name
-    --bagit_data_directory  |str    |-bd    |the directory in which to put the extracted bagit data (default "mydata")
+    --bagit_data_directory  |str    |-bd    |the directory in which to put the extracted bagit data
     --score_desc            |str    |-sd    |score descript name
 ```
 
